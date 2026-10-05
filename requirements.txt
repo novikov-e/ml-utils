@@ -10,13 +10,16 @@ ipython==9.17.1
 ipython_pygments_lexers==1.1.1
 ipywidgets==8.1.9
 jedi==0.20.0
+Jinja2==3.1.6
+jupyter-dark-detect==0.1.0
 jupyter_client==8.10.0
 jupyter_core==5.9.1
 jupyterlab_widgets==3.0.17
 kiwisolver==1.5.1
+MarkupSafe==3.0.4
 matplotlib==3.11.2
 matplotlib-inline==0.2.2
--e git+ssh://git@github.com/novikov-e/ml-utils.git@5bc48bcad434db9b268c3ef054aadec42888b04e#egg=ml_utils
+-e git+ssh://git@github.com/novikov-e/ml-utils.git@5d22c8b8b7946865cf9cad128b8a1254348c86ea#egg=ml_utils
 nest-asyncio2==1.7.3
 numpy==2.5.3
 packaging==26.3

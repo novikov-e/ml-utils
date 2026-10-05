@@ -1,0 +1,13 @@
+{% from 'static/macros.html' import render_table %}
+
+<div class="page">
+	<div class="left-container">
+		<div class="flex-column">
+			<h3 class="table-title">Общие сведения</h3>
+			{{ render_table(stats_cols, stats_rows, align_stats) }}
+		</div>
+	</div>
+	<div class="right-container">
+		{{ plot_html | safe }}
+	</div>
+</div>
