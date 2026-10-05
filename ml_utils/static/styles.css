@@ -5,6 +5,36 @@
 
 .dashboard-wrapper {
 	background-color: #ffffff !important;
+	/* background-color: red !important; */
+	/* width: 100%; */
+}
+
+/* Стилизация ipywidgets.Button через привязанный класс */
+.nav-btn {
+	border: 1px solid #114390 !important;
+	border-radius: 6px !important;
+	transition: background-color 0.2s ease, transform 0.1s ease !important;
+}
+
+/* Эффект наведения (hover) */
+.nav-btn:hover {
+	background-color: #114390 !important;
+	/* Более темный синий */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Эффект нажатия (active) */
+.nav-btn:active {
+	transform: scale(0.95) !important;
+}
+
+/* Состояние отключенной кнопки (disabled) */
+.nav-btn[disabled] {
+	background-color: #e0e0e0 !important;
+	color: #9e9e9e !important;
+	border-color: #ccc !important;
+	cursor: not-allowed !important;
+	box-shadow: none !important;
 }
 
 .header {
@@ -29,12 +59,18 @@
 }
 
 .samples {
-	display: flex;
-	flex-direction: column;
-	width: 1160px;
+	/* display: flex;
+	flex-direction: column; */
+	display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		width: 100%;
+		max-width: 100%;
+	/* width: 1060px; */
+	/* width: minmax(0, 1fr); */
 	height: 480px;
 	padding-right: 5px;
 	overflow: auto;
+	box-sizing: border-box;
 }
 
 .image-container {

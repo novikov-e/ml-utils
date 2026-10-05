@@ -508,10 +508,13 @@ class CleanerAccessor:
             width='36px', height='36px'))
 
         # Жесткая защита стилей кнопок от темной темы Colab/VS Code
-        btn_prev.style.button_color = '#f2f2f2'
-        btn_prev.style.text_color = '#212121'
-        btn_next.style.button_color = '#f2f2f2'
-        btn_next.style.text_color = '#212121'
+        # btn_prev.style.button_color = "#185bc0"
+        # btn_prev.style.text_color = '#212121'
+        # btn_next.style.button_color = '#185bc0'
+        # btn_next.style.text_color = '#212121'
+
+        btn_prev.add_class('nav-btn')
+        btn_next.add_class('nav-btn')
 
         # Загружаем шаблон шапки один раз
         header_tpl = self.jinja_env.get_template('static/header.html')
