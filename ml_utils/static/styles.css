@@ -10,7 +10,7 @@
 }
 
 .h3 {
-	color: black;
+	color: black !important;
 }
 
 /* Стилизация ipywidgets.Button через привязанный класс */
@@ -46,7 +46,7 @@
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;
-	background-color: #ffffff !important;
+	/* background-color: #ffffff !important; */
 	padding: 5px;
 }
 
