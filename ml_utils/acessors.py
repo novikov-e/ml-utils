@@ -473,101 +473,6 @@ class CleanerAccessor:
 
         return {'title': f"Столбец {column}", 'content': full_page_html}
 
-    # def build_eda_dashboard(self, title="Комплексный EDA Анализ"):
-    #     """Генерирует все страницы и запускает интерактивный дашборд."""
-    #     print("⏳ Анализирую датасет и строю графики. Пожалуйста, подождите...")
-
-    #     pages = []
-
-    #     # Генерация страниц
-    #     pages.append(self.generate_overview_page(self._obj))
-    #     pages.append(self.generate_sample_page(self._obj))
-
-    #     for col in self._obj.columns:
-    #         col_type = self.get_column_type(self._obj, col)
-    #         if col_type == 'numeric':
-    #             pages.append(self.generate_numeric_page(self._obj, col))
-    #         elif col_type == 'categorical':
-    #             pages.append(self.generate_categorical_page(self._obj, col))
-    #         elif col_type == 'boolean':
-    #             pages.append(self.generate_boolean_page(self._obj, col))
-    #         elif col_type == 'date':
-    #             pages.append(self.generate_date_page(self._obj, col))
-
-    #     current_page_idx = [0]
-    #     total_pages = len(pages)
-
-    #     # Элементы интерфейса
-    #     header_widget = HTML(layout=Layout(flex='1'))
-    #     content_widget = HTML(layout=Layout(
-    #         width='100%', height='auto', display='flex', justify_content='center'))
-
-    #     btn_prev = Button(description="◀", layout=Layout(
-    #         width='36px', height='36px'))
-    #     btn_next = Button(description="▶", layout=Layout(
-    #         width='36px', height='36px'))
-
-    #     # Жесткая защита стилей кнопок от темной темы Colab/VS Code
-    #     btn_prev.style.button_color = '#f2f2f2'
-    #     btn_prev.style.text_color = '#212121'
-    #     btn_next.style.button_color = '#f2f2f2'
-    #     btn_next.style.text_color = '#212121'
-
-    #     # Загружаем шаблон шапки один раз
-    #     header_tpl = self.jinja_env.get_template('static/header.html')
-
-    #     def update_state():
-    #         idx = current_page_idx[0]
-    #         page = pages[idx]
-
-    #         # Используем Jinja2 для рендера шапки
-    #         header_widget.value = header_tpl.render(
-    #             main_title=title,
-    #             page_title=page['title'],
-    #             current_page=idx + 1,
-    #             total_pages=total_pages
-    #         )
-
-    #         content_widget.value = page['content']
-
-    #         btn_prev.disabled = (idx == 0)
-    #         btn_next.disabled = (idx == total_pages - 1)
-
-    #     def on_prev(b):
-    #         if current_page_idx[0] > 0:
-    #             current_page_idx[0] -= 1
-    #             update_state()
-
-    #     def on_next(b):
-    #         if current_page_idx[0] < total_pages - 1:
-    #             current_page_idx[0] += 1
-    #             update_state()
-
-    #     btn_prev.on_click(on_prev)
-    #     btn_next.on_click(on_next)
-
-    #     update_state()
-
-    #     top_panel = HBox([header_widget, btn_prev, btn_next], layout=Layout(
-    #         display='flex', justify_content='space-between', align_items='center',
-    #         padding='5px 10px', border_bottom='1px solid #ddd', margin='0px 0px 15px 0px', width='100%'))
-
-    #     global_styles = HTML(value=f"<style>\n{self._css}\n</style>")
-
-    #     dashboard_layout = VBox(
-    #         [global_styles, top_panel, content_widget],
-    #         layout=Layout(display='flex', flex_direction='column',
-    #                       width='100%', height='auto', overflow='hidden')
-    #     )
-
-    #     # Применяем изолирующий класс ко всем основным виджетам
-    #     dashboard_layout.add_class('dashboard-wrapper')
-    #     top_panel.add_class('dashboard-wrapper')
-    #     content_widget.add_class('dashboard-wrapper')
-
-    #     clear_output()
-    #     display(dashboard_layout)
-
     def build_eda_dashboard(self, title="Комплексный EDA Анализ"):
         """Генерирует все страницы и запускает интерактивный дашборд."""
         print("⏳ Анализирую датасет и строю графики. Пожалуйста, подождите...")
@@ -623,39 +528,7 @@ class CleanerAccessor:
                 total_pages=total_pages
             )
 
-            # --- ИЗОЛЯЦИЯ КОНТЕНТА В IFRAME ---
-            # 1. Собираем полноценный HTML-документ с нашими стилями
-            isolated_html = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    /* Сброс базовых отступов внутри песочницы */
-                    body {{
-                        margin: 0;
-                        padding: 0;
-                        background-color: #ffffff;
-                        color: #212121;
-                        font-family: sans-serif;
-                    }}
-                    /* Подгружаем наш CSS внутрь песочницы */
-                    {self._css}
-                </style>
-            </head>
-            <body>
-                <!-- Оборачиваем в класс, чтобы стили из CSS применились корректно -->
-                <div class="dashboard-wrapper" style="border: none !important; padding: 0 !important; box-shadow: none !important;">
-                    {page['content']}
-                </div>
-            </body>
-            </html>
-            """
-
-            # 2. Экранируем спецсимволы и кавычки
-            safe_html = html.escape(isolated_html)
-
-            # 3. Передаем iframe в виджет отображения
-            content_widget.value = f'<iframe srcdoc="{safe_html}" style="width: 100%; height: 500px; border: none; background: #fff;"></iframe>'
+            content_widget.value = page['content']
 
             btn_prev.disabled = (idx == 0)
             btn_next.disabled = (idx == total_pages - 1)
@@ -677,9 +550,8 @@ class CleanerAccessor:
 
         top_panel = HBox([header_widget, btn_prev, btn_next], layout=Layout(
             display='flex', justify_content='space-between', align_items='center',
-            padding='5px 10px', border_bottom='1px solid #ddd', margin='0px 0px 10px 0px', width='100%'))
+            padding='5px 10px', border_bottom='1px solid #ddd', margin='0px 0px 15px 0px', width='100%'))
 
-        # Оставляем стили для внешней обертки (чтобы шапка и кнопки тоже не ломались)
         global_styles = HTML(value=f"<style>\n{self._css}\n</style>")
 
         dashboard_layout = VBox(
@@ -688,12 +560,12 @@ class CleanerAccessor:
                           width='100%', height='auto', overflow='hidden')
         )
 
-        # Применяем изолирующий класс к внешним виджетам
+        # Применяем изолирующий класс ко всем основным виджетам
         dashboard_layout.add_class('dashboard-wrapper')
         top_panel.add_class('dashboard-wrapper')
-
-        # Виджет контента обернут классом внутри iframe, но здесь тоже оставляем для подстраховки
         content_widget.add_class('dashboard-wrapper')
 
         clear_output()
         display(dashboard_layout)
+
+    

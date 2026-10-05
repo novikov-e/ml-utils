@@ -1,10 +1,10 @@
-.flex-column {
+/* .flex-column {
 	display: flex;
 	flex-direction: column;
 }
 
 .dashboard-wrapper {
-	/* background-color: #ffffff !important; */
+	background-color: #ffffff !important;
 }
 
 .header {
@@ -12,20 +12,20 @@
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;
-	/* background-color: #ffffff !important; */
+	background-color: #ffffff !important;
 	padding: 5px;
 }
 
 .header-title {
 	font-weight: bold;
 	margin: 0;
-	/* color: #212121 !important; */
+	color: #212121 !important;
 }
 
 .page-counter-title {
 	margin: 0;
 	margin-right: 10px;
-	/* color: #212121 !important; */
+	color: #212121 !important;
 }
 
 .samples {
@@ -102,7 +102,7 @@
 }
 
 .table-container th {
-	/* background-color: #f2f2f2 !important; */
+	background-color: #f2f2f2 !important;
 	padding: 4px 8px;
 	border-bottom: 1px solid #ddd;
 	font-size: 12px;
@@ -113,7 +113,7 @@
 }
 
 .table-container td {
-	/* background-color: #ffffff !important; */
+	background-color: #ffffff !important;
 	padding: 4px 8px;
 	border-bottom: 1px solid #eee;
 	font-size: 12px;
@@ -122,4 +122,152 @@
 
 .table-container tr:last-child td {
 	border-bottom: none;
+} */
+
+
+
+
+
+
+
+/* --- СТРОГИЙ СБРОС СТИЛЕЙ COLAB И JUPYTER --- */
+/* Переопределяем системные переменные прямо на контейнере вывода */
+.output_subarea,
+.dashboard-wrapper {
+	--colab-primary-text-color: #212121 !important;
+	--colab-bg-color: #ffffff !important;
+	--jp-ui-font-color1: #212121 !important;
+	--jp-layout-color1: #ffffff !important;
+	color: #212121 !important;
+	background-color: #ffffff !important;
+}
+
+/* Принудительно красим весь текст внутри дашборда */
+.output_subarea .dashboard-wrapper *,
+.dashboard-wrapper * {
+	color: #212121 !important;
+}
+
+
+/* --- ОСНОВНАЯ РАЗМЕТКА --- */
+.dashboard-wrapper {
+	padding: 10px !important;
+	border-radius: 8px !important;
+	border: 1px solid #ddd !important;
+	background-color: #ffffff !important;
+}
+
+.dashboard-wrapper .page {
+	display: flex !important;
+	width: 100% !important;
+	height: 480px !important;
+	gap: 10px !important;
+	align-items: flex-start !important;
+	justify-content: center !important;
+	box-sizing: border-box !important;
+	background-color: #ffffff !important;
+}
+
+.dashboard-wrapper .left-container {
+	width: 33% !important;
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	overflow: hidden !important;
+	box-sizing: border-box !important;
+	background-color: #ffffff !important;
+}
+
+.dashboard-wrapper .right-container {
+	width: 67% !important;
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	overflow: hidden !important;
+	box-sizing: border-box !important;
+	background-color: #ffffff !important;
+}
+
+.dashboard-wrapper .table-title {
+	margin: 0 0 5px 0 !important;
+	color: #212121 !important;
+	background-color: transparent !important;
+	font-weight: bold !important;
+}
+
+/* --- ГРАФИКИ --- */
+.dashboard-wrapper .image-container {
+	width: 100% !important;
+	max-height: 480px !important;
+	overflow: auto !important;
+	text-align: center !important;
+	background-color: #ffffff !important;
+}
+
+.dashboard-wrapper .image-container img {
+	max-width: 100% !important;
+	height: auto !important;
+	display: block !important;
+	margin: 0 auto !important;
+	background-color: #ffffff !important;
+}
+
+/* --- ТАБЛИЦЫ (Защита от Colab) --- */
+.dashboard-wrapper .table-container {
+	width: 100% !important;
+	max-height: 480px !important;
+	overflow: auto !important;
+	font-family: sans-serif !important;
+	border: 1px solid #ddd !important;
+	border-radius: 6px !important;
+	box-sizing: border-box !important;
+	background-color: #ffffff !important;
+}
+
+/* Явно указываем border-collapse, чтобы рамки не пропадали */
+.output_subarea .dashboard-wrapper table,
+.dashboard-wrapper table {
+	width: 100% !important;
+	border-collapse: collapse !important;
+	/* КРИТИЧНО ДЛЯ РАМОК */
+	border-spacing: 0 !important;
+	margin: 0 !important;
+	white-space: nowrap !important;
+	background-color: #ffffff !important;
+	border: none !important;
+}
+
+.output_subarea .dashboard-wrapper th,
+.dashboard-wrapper th {
+	background-color: #f2f2f2 !important;
+	color: #212121 !important;
+	padding: 6px 8px !important;
+	border: 1px solid #ddd !important;
+	/* Рамки ячеек заголовка */
+	font-size: 12px !important;
+	line-height: 1.2 !important;
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 1 !important;
+}
+
+.output_subarea .dashboard-wrapper td,
+.dashboard-wrapper td {
+	background-color: #ffffff !important;
+	color: #212121 !important;
+	padding: 6px 8px !important;
+	border: 1px solid #eee !important;
+	/* Рамки обычных ячеек */
+	font-size: 12px !important;
+	line-height: 1.2 !important;
+}
+
+/* Убираем заливку четных/нечетных строк, которую любит делать Jupyter */
+.output_subarea .dashboard-wrapper tr,
+.dashboard-wrapper tr {
+	background-color: transparent !important;
+}
+
+.dashboard-wrapper tr:hover td {
+	background-color: #f9f9f9 !important;
 }
