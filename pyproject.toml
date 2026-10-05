@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-utils"
+version = "0.1.0"
+description = "Custom Pandas accessors and ML utilities"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=1.5.0",
+    "ipywidgets==8.1.9",
+    "matplotlib==3.11.2",
+    "numpy==2.5.3",
+    "pandas==3.0.6",
+    "seaborn==0.13.2"
+    # Добавьте сюда другие библиотеки, нужные для EDA/отчетов (например, matplotlib, seaborn, ydata-profiling)
+]
+
+[tool.setuptools]
+packages = ["ml_utils"]
