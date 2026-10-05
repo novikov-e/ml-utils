@@ -9,22 +9,21 @@
 	/* width: 100%; */
 }
 
-.h3 {
+h3 {
 	color: black !important;
 }
 
 /* Стилизация ipywidgets.Button через привязанный класс */
 .nav-btn {
-	border: 1px solid #114390 !important;
+	border: none !important;
+	background-color: #2a6aca !important;
 	border-radius: 6px !important;
 	transition: background-color 0.2s ease, transform 0.1s ease !important;
 }
 
 /* Эффект наведения (hover) */
 .nav-btn:hover {
-	background-color: #114390 !important;
-	/* Более темный синий */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+	background-color: #2a6aca !important;
 }
 
 /* Эффект нажатия (active) */
