@@ -64,6 +64,7 @@ h3 {
 	padding-right: 5px;
 	overflow: auto;
 	box-sizing: border-box;
+	padding: 10px;
 }
 
 .image-container {
