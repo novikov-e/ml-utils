@@ -815,7 +815,9 @@ class CleanerAccessor:
     def convert_plot_to_html(self, fig):
         """Конвертирует объект matplotlib figure в центрированную HTML-строку с собственным скроллом."""
         buf = io.BytesIO()
-        fig.savefig(buf, format='png', bbox_inches='tight', dpi=100)
+        # Добавлен facecolor='white', чтобы графики гарантированно сохраняли белый фон
+        fig.savefig(buf, format='png', bbox_inches='tight',
+                    dpi=100, facecolor='white')
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close(fig)
@@ -1065,62 +1067,63 @@ class CleanerAccessor:
         if series.empty:
             plot_html = "<div style='text-align:center; width:100%;'><h3>Нет данных для построения графика</h3></div>"
         else:
-            fig, axes = plt.subplots(
-                nrows=2,
-                ncols=1,
-                figsize=(7.5, 4.5),
-                gridspec_kw={"height_ratios": [0.8, 0.2]}
-            )
+            with plt.style.context('default'):
+                fig, axes = plt.subplots(
+                    nrows=2,
+                    ncols=1,
+                    figsize=(7.5, 4.5),
+                    gridspec_kw={"height_ratios": [0.8, 0.2]}
+                )
 
-            sns.histplot(
-                series,
-                bins=30,
-                ax=axes[0],
-                color="#2fa1a7",
-                alpha=0.6,
-                edgecolor="black",
-                linewidth=0.5
-            )
-            axes[0].set_ylabel("Частота", fontsize=9)
-            axes[0].set_xlabel("")
-            axes[0].grid(color='gray', linestyle='-', alpha=0.3)
-            axes[0].set_axisbelow(False)
+                sns.histplot(
+                    series,
+                    bins=30,
+                    ax=axes[0],
+                    color="#2fa1a7",
+                    alpha=0.6,
+                    edgecolor="black",
+                    linewidth=0.5
+                )
+                axes[0].set_ylabel("Частота", fontsize=9)
+                axes[0].set_xlabel("")
+                axes[0].grid(color='gray', linestyle='-', alpha=0.3)
+                axes[0].set_axisbelow(False)
 
-            ax_kde = axes[0].twinx()
+                ax_kde = axes[0].twinx()
 
-            sns.kdeplot(
-                series,
-                ax=ax_kde,
-                color="#eb3472",
-                linewidth=1
-            )
-            ax_kde.set_ylabel("")
-            ax_kde.set_yticks([])
+                sns.kdeplot(
+                    series,
+                    ax=ax_kde,
+                    color="#eb3472",
+                    linewidth=1
+                )
+                ax_kde.set_ylabel("")
+                ax_kde.set_yticks([])
 
-            sns.boxplot(
-                x=series,
-                ax=axes[1],
-                color="#2fa1a7",
-                width=0.4,
-                linewidth=1,
-                linecolor="black",
-                notch=True,
-                fliersize=4,
-                saturation=1,
-                boxprops={'alpha': 0.6},
-                flierprops={
-                    'marker': 'o',
-                    'markerfacecolor': '#eb3472',
-                    'markeredgecolor': 'none',
-                    'alpha': 0.4
-                }
-            )
-            axes[1].set_xlabel("Значение", fontsize=9)
-            axes[1].grid(color='gray', linestyle='-', alpha=0.3)
-            axes[1].set_axisbelow(False)
+                sns.boxplot(
+                    x=series,
+                    ax=axes[1],
+                    color="#2fa1a7",
+                    width=0.4,
+                    linewidth=1,
+                    linecolor="black",
+                    notch=True,
+                    fliersize=4,
+                    saturation=1,
+                    boxprops={'alpha': 0.6},
+                    flierprops={
+                        'marker': 'o',
+                        'markerfacecolor': '#eb3472',
+                        'markeredgecolor': 'none',
+                        'alpha': 0.4
+                    }
+                )
+                axes[1].set_xlabel("Значение", fontsize=9)
+                axes[1].grid(color='gray', linestyle='-', alpha=0.3)
+                axes[1].set_axisbelow(False)
 
-            plt.tight_layout()
-            plot_html = self.convert_plot_to_html(fig)
+                plt.tight_layout()
+                plot_html = self.convert_plot_to_html(fig)
 
         full_page_html = self.create_page_layout(table_html, plot_html)
         return {'title': f"Столбец {column}", 'content': full_page_html}
@@ -1183,28 +1186,30 @@ class CleanerAccessor:
         if series.empty:
             plot_html = "<div style='text-align:center; width:100%;'><h3>Нет данных</h3></div>"
         else:
-            fig, ax = plt.subplots(figsize=(7.5, 4.5))
-            top_cats = series.value_counts().iloc[:15]
+            with plt.style.context('default'):
+                fig, ax = plt.subplots(figsize=(7.5, 4.5))
+                top_cats = series.value_counts().iloc[:15]
 
-            sns.barplot(
-                y=top_cats.index.astype(str),
-                x=top_cats.values,
-                ax=ax,
-                hue=top_cats.index,
-                legend=False,
-                alpha=0.6,
-                edgecolor="black",
-                linewidth=0.5,
-                orient='h'
-            )
+                sns.barplot(
+                    y=top_cats.index.astype(str),
+                    x=top_cats.values,
+                    ax=ax,
+                    hue=top_cats.index,
+                    legend=False,
+                    alpha=0.6,
+                    edgecolor="black",
+                    linewidth=0.5,
+                    orient='h'
+                )
 
-            ax.set_title(f"Частотный анализ", fontsize=11, fontweight='bold')
-            ax.set_xlabel("Количество", fontsize=9)
-            ax.set_ylabel("")
-            ax.grid(color='gray', linestyle='-', alpha=0.3)
+                ax.set_title(f"Частотный анализ",
+                             fontsize=11, fontweight='bold')
+                ax.set_xlabel("Количество", fontsize=9)
+                ax.set_ylabel("")
+                ax.grid(color='gray', linestyle='-', alpha=0.3)
 
-            plt.tight_layout()
-            plot_html = self.convert_plot_to_html(fig)
+                plt.tight_layout()
+                plot_html = self.convert_plot_to_html(fig)
 
         full_page_html = self.create_page_layout(table_html, plot_html)
         return {'title': f"Столбец {column}", 'content': full_page_html}
@@ -1256,27 +1261,28 @@ class CleanerAccessor:
         if series.empty:
             plot_html = "<div style='text-align:center; width:100%;'><h3>Нет данных</h3></div>"
         else:
-            fig, ax = plt.subplots(figsize=(7.5, 4.5))
-            colors = sns.color_palette('pastel')[0:len(counts)]
+            with plt.style.context('default'):
+                fig, ax = plt.subplots(figsize=(7.5, 4.5))
+                colors = sns.color_palette('pastel')[0:len(counts)]
 
-            ax.pie(
-                counts.values,
-                labels=counts.index,
-                autopct='%1.1f%%',
-                startangle=90,
-                colors=colors,
-                wedgeprops={
-                    'edgecolor': 'white',
-                    'linewidth': 2
-                }
-            )
+                ax.pie(
+                    counts.values,
+                    labels=counts.index,
+                    autopct='%1.1f%%',
+                    startangle=90,
+                    colors=colors,
+                    wedgeprops={
+                        'edgecolor': 'white',
+                        'linewidth': 2
+                    }
+                )
 
-            centre_circle = Circle((0, 0), 0.65, fc='white')
-            fig.gca().add_artist(centre_circle)
-            ax.axis('equal')
-            ax.set_title(f"Баланс классов", fontsize=11, fontweight='bold')
-            plt.tight_layout()
-            plot_html = self.convert_plot_to_html(fig)
+                centre_circle = Circle((0, 0), 0.65, fc='white')
+                fig.gca().add_artist(centre_circle)
+                ax.axis('equal')
+                ax.set_title(f"Баланс классов", fontsize=11, fontweight='bold')
+                plt.tight_layout()
+                plot_html = self.convert_plot_to_html(fig)
 
         full_page_html = self.create_page_layout(table_html, plot_html)
         return {'title': f"Столбец {column}", 'content': full_page_html}
@@ -1370,38 +1376,39 @@ class CleanerAccessor:
             </div>
             """
 
-            fig, ax = plt.subplots(figsize=(7.5, 4.5))
+            with plt.style.context('default'):
+                fig, ax = plt.subplots(figsize=(7.5, 4.5))
 
-            sns.histplot(
-                clean_dates,
-                bins=30,
-                ax=ax,
-                color="#2fa1a7",
-                alpha=0.6,
-                edgecolor="black",
-                linewidth=0.5
-            )
+                sns.histplot(
+                    clean_dates,
+                    bins=30,
+                    ax=ax,
+                    color="#2fa1a7",
+                    alpha=0.6,
+                    edgecolor="black",
+                    linewidth=0.5
+                )
 
-            ax_kde = ax.twinx()
+                ax_kde = ax.twinx()
 
-            sns.kdeplot(
-                clean_dates,
-                ax=ax_kde,
-                color="#eb3472",
-                linewidth=1
-            )
-            ax_kde.set_ylabel("")
-            ax_kde.set_yticks([])
+                sns.kdeplot(
+                    clean_dates,
+                    ax=ax_kde,
+                    color="#eb3472",
+                    linewidth=1
+                )
+                ax_kde.set_ylabel("")
+                ax_kde.set_yticks([])
 
-            ax.set_title(f"Распределение во времени",
-                         fontsize=11, fontweight='bold')
-            ax.set_xlabel("Дата", fontsize=9)
-            ax.set_ylabel("Количество записей", fontsize=9)
-            ax.grid(True, color='gray', linestyle='-', alpha=0.3)
+                ax.set_title(f"Распределение во времени",
+                             fontsize=11, fontweight='bold')
+                ax.set_xlabel("Дата", fontsize=9)
+                ax.set_ylabel("Количество записей", fontsize=9)
+                ax.grid(True, color='gray', linestyle='-', alpha=0.3)
 
-            plt.xticks(rotation=30, ha='right')
-            plt.tight_layout()
-            plot_html = self.convert_plot_to_html(fig)
+                plt.xticks(rotation=30, ha='right')
+                plt.tight_layout()
+                plot_html = self.convert_plot_to_html(fig)
 
         full_page_html = self.create_page_layout(table_html, plot_html)
         return {'title': f"Столбец {column}", 'content': full_page_html}
@@ -1440,14 +1447,21 @@ class CleanerAccessor:
         btn_next = Button(description="▶", layout=Layout(
             width='36px', height='36px'))
 
+        # Жестко прописываем стиль кнопок в обход темы Jupyter/Colab
+        btn_prev.style.button_color = '#f2f2f2'
+        btn_prev.style.text_color = '#212121'
+        btn_next.style.button_color = '#f2f2f2'
+        btn_next.style.text_color = '#212121'
+
         def update_state():
             idx = current_page_idx[0]
             page = pages[idx]
 
+            # Оборачиваем header в жесткий inline-сброс
             header_widget.value = f"""
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <h2 style="font-weight: bold;">{title}: {page['title']}</h2>
-                <h4 style="margin: 0; margin-right: 10px;">Страница {idx + 1} из {total_pages}</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; color: #212121 !important; background-color: transparent;">
+                <h2 style="font-weight: bold; margin: 0; color: #212121 !important;">{title}: {page['title']}</h2>
+                <h4 style="margin: 0; margin-right: 10px; color: #212121 !important;">Страница {idx + 1} из {total_pages}</h4>
             </div>
             """
             content_widget.value = page['content']
@@ -1473,97 +1487,132 @@ class CleanerAccessor:
         top_panel = HBox([header_widget, btn_prev, btn_next], layout=Layout(display='flex', justify_content='space-between',
                          align_items='center', padding='5px 10px', border_bottom='1px solid #ddd', margin='0px 0px 15px 0px', width='100%'))
 
+        # Экстремально специфичный CSS со сбросом глобальных переменных
         global_styles = HTML(value="""
         <style>
+            /* 1. Нейтрализуем инъекции переменных из Colab и Jupyter для нашего виджета */
             .dashboard-wrapper {
-                background-color: #ffffff !important; 
+                --colab-primary-text-color: #212121 !important;
+                --colab-bg-color: #ffffff !important;
+                --colab-border-color: #dddddd !important;
+                --colab-callout-background-color: #f2f2f2 !important;
+                --jp-ui-font-color1: #212121 !important;
+                --jp-layout-color1: #ffffff !important;
+                
+                background-color: #ffffff !important;
+                color: #212121 !important;
             }
 
-            .image-container {
+            /* 2. Принудительно окрашиваем весь текст внутри виджета (включая span и div от Colab) */
+            .dashboard-wrapper * {
+                color: #212121 !important;
+            }
+
+            .dashboard-wrapper .image-container {
                 width: 100%; 
                 max-height: 480px; 
                 overflow: auto; 
-                text-align: center;    
+                text-align: center;
+                background-color: #ffffff !important;    
             }
                                     
-            .image-container img {
+            .dashboard-wrapper .image-container img {
                 max-width: 100%; 
                 height: auto; 
                 display: block; 
                 margin: 0 auto;                        
             }
                                     
-            .page {
+            .dashboard-wrapper .page {
                 display: flex; 
                 width: 100%; 
                 height: 480px; 
                 gap: 10px; 
                 align-items: flex-start; 
                 justify-content: center;   
-                box-sizing: border-box;   
+                box-sizing: border-box; 
+                background-color: #ffffff !important;  
             }
                                     
-            .left-container {
+            .dashboard-wrapper .left-container {
                 width: 33%; 
                 height: 100%; 
                 display: flex; 
                 flex-direction: column; 
                 overflow: hidden;
                 box-sizing: border-box;
+                background-color: #ffffff !important;
             }
                                     
-            .right-container {
+            .dashboard-wrapper .right-container {
                 width: 67%; 
                 height: 100%; 
                 display: flex; 
                 flex-direction: column; 
                 overflow: hidden;       
-                box-sizing: border-box;    
+                box-sizing: border-box; 
+                background-color: #ffffff !important;   
             }
                                     
-            .table-title {
-                margin: 0;
+            .dashboard-wrapper .table-title {
+                margin: 0 0 5px 0 !important;
+                color: #212121 !important;
             }
                                     
-            .table-container {
+            .dashboard-wrapper .table-container {
                 width: 100%; 
                 max-height: 480px; 
                 overflow: auto;
                 font-family: sans-serif; 
-                border: 1px solid #ddd; 
+                border: 1px solid #ddd !important; 
                 border-radius: 6px;
-                box-sizing: border-box;                   
+                box-sizing: border-box; 
+                background-color: #ffffff !important;                  
             }
                                     
-            .table-container table { 
+            .dashboard-wrapper .table-container table { 
                 width: 100%; 
                 border-collapse: separate; 
                 border-spacing: 0; 
                 margin: 0; 
                 white-space: nowrap;
-            }
-                
-            .table-container th { 
-                background-color: #f2f2f2 !important; 
-                padding: 4px 8px; 
-                border-bottom: 1px solid #ddd; 
-                font-size: 12px; 
-                line-height: 1.2; 
-                position: sticky; 
-                top: 0; 
-                z-index: 1; 
-            }
-                
-            .table-container td { 
-                background-color: #ffffff !important; 
-                padding: 4px 8px; 
-                border-bottom: 1px solid #eee; 
-                font-size: 12px; 
-                line-height: 1.2; 
+                background-color: #ffffff !important;
             }
             
-            .table-container tr:last-child td { 
-                border-bottom: none; 
+            /* 3. Усиленные селекторы ячеек, которые не пробить глобальным CSS (html body ...) */
+            html body .dashboard-wrapper th,
+            .dashboard-wrapper th,
+            .dashboard-wrapper .table-container th { 
+                background-color: #f2f2f2 !important; 
+                color: #212121 !important; 
+                padding: 4px 8px !important; 
+                border-bottom: 1px solid #ddd !important;
+                border-top: none !important;
+                border-left: none !important;
+                border-right: none !important; 
+                font-size: 12px !important; 
+                line-height: 1.2 !important; 
+                position: sticky !important; 
+                top: 0 !important; 
+                z-index: 1 !important; 
+            }
+            
+            html body .dashboard-wrapper td,    
+            .dashboard-wrapper td,
+            .dashboard-wrapper .table-container td { 
+                background-color: #ffffff !important; 
+                color: #212121 !important; 
+                padding: 4px 8px !important; 
+                border-bottom: 1px solid #eee !important;
+                border-top: none !important;
+                border-left: none !important;
+                border-right: none !important; 
+                font-size: 12px !important; 
+                line-height: 1.2 !important; 
+            }
+            
+            .dashboard-wrapper .table-container tr:last-child td { 
+                border-bottom: none !important; 
             }
         </style>
         """)
