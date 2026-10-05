@@ -681,7 +681,7 @@ class CleanerAccessor:
         global_styles = HTML(value="""
         <style>
             .dashboard-wrapper {
-                background-color: #ffffff; 
+                background-color: #ffffff !important; 
             }
 
             .image-container {
