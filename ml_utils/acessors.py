@@ -680,6 +680,10 @@ class CleanerAccessor:
 
         global_styles = HTML(value="""
         <style>
+            .dashboard-wrapper {
+                background-color: #ffffff; 
+            }
+
             .image-container {
                 width: 100%; 
                 max-height: 480px; 
@@ -783,9 +787,12 @@ class CleanerAccessor:
                 overflow='hidden'
             )
         )
+        dashboard_layout.add_class('dashboard-wrapper')
 
         clear_output()
         display(dashboard_layout)
+
+
 
 # import base64
 # import io
