@@ -1,6 +1,7 @@
 .flex-column {
 	display: flex;
 	flex-direction: column;
+	color: #39c6ce;
 }
 
 .dashboard-wrapper {

@@ -586,7 +586,7 @@ class CleanerAccessor:
         self._obj = pandas_obj
 
     def _build_html_table(self, cols, rows, aligns=None):
-        """Внутренний метод для генерации HTML-таблиц без использования Jinja2."""
+        """Внутренний метод для генерации HTML-таблиц."""
         if aligns is None:
             aligns = {}
 
@@ -602,9 +602,13 @@ class CleanerAccessor:
             html_str.append('<tr>')
             for c in cols:
                 val = row.get(c, '')
-                # Обработка NaN для красивого вывода
-                val_str = "" if pd.isna(val) and not isinstance(
-                    val, str) else str(val)
+                # Защита от NaN
+                val_str = "" if not isinstance(
+                    val, str) and pd.isna(val) else str(val)
+                # Если значение "nan" из-за astype(str), делаем его пустым для эстетики (по желанию)
+                if val_str.lower() == 'nan':
+                    val_str = ""
+
                 align = aligns.get(c, "left")
                 html_str.append(
                     f'<td style="text-align:{align}">{html.escape(val_str)}</td>')
@@ -620,7 +624,7 @@ class CleanerAccessor:
         buf.seek(0)
         img_base64 = base64.b64encode(buf.read()).decode('utf-8')
         plt.close(fig)
-        return f'<div class="image-container"><img src="data:image/png;base64,{img_base64}" style="max-width:100%; height:auto;"></div>'
+        return f'<div class="image-container"><img src="data:image/png;base64,{img_base64}"></div>'
 
     def get_column_type(self, df, col):
         dtype = df[col].dtype
@@ -675,25 +679,24 @@ class CleanerAccessor:
         dtypes_df = df.dtypes.astype(str).value_counts().reset_index()
         dtypes_df.columns = ['Тип данных', 'Количество']
 
-        # Генерация таблиц
         html_df_info = self._build_html_table(
-            df_info.columns.tolist(), df_info.to_dict('records'))
+            df_info.columns.tolist(), df_info.astype(str).to_dict('records'))
         html_dtypes = self._build_html_table(
-            dtypes_df.columns.tolist(), dtypes_df.to_dict('records'))
-        html_info = self._build_html_table(info_df.columns.tolist(), info_df.to_dict('records'),
+            dtypes_df.columns.tolist(), dtypes_df.astype(str).to_dict('records'))
+        html_info = self._build_html_table(info_df.columns.tolist(), info_df.astype(str).to_dict('records'),
                                            aligns={'Признак': 'left', 'Тип': 'center', 'Кол-во (not-null)': 'center',
                                                    'Пропуски': 'center', 'Доля пропусков (%)': 'center', 'Уникальных': 'center'})
 
         content = f"""
         <div class="flex-container">
-            <div class="flex-left" style="min-width: 300px;">
-                <h4>Информация о датасете</h4>
+            <div class="flex-left">
+                <h4 class="table-title">Информация о датасете</h4>
                 {html_df_info}
-                <h4>Типы данных</h4>
+                <h4 class="table-title" style="margin-top: 15px;">Типы данных</h4>
                 {html_dtypes}
             </div>
-            <div class="flex-right" style="min-width: 500px; flex: 2;">
-                <h4>Информация о столбцах</h4>
+            <div class="flex-right">
+                <h4 class="table-title">Информация о столбцах</h4>
                 {html_info}
             </div>
         </div>
@@ -707,20 +710,24 @@ class CleanerAccessor:
         rows = sample_df.astype(str).to_dict(orient='records')
 
         table_html = self._build_html_table(columns, rows)
-        content = f"<h4>Случайная выборка (до 17 строк)</h4>{table_html}"
+        content = f"""
+        <div class="single-container">
+            <h4 class="table-title">Случайная выборка (до 17 строк)</h4>
+            {table_html}
+        </div>
+        """
         return {'title': 'Случайные строки', 'content': content}
 
     def _render_column_layout(self, stats_df, plot_html):
-        """Общий макет для страниц со статистикой и графиком"""
         stats_html = self._build_html_table(
-            stats_df.columns.tolist(), stats_df.to_dict('records'))
+            stats_df.columns.tolist(), stats_df.astype(str).to_dict('records'))
         return f"""
         <div class="flex-container">
-            <div class="flex-left" style="min-width: 300px;">
-                <h4>Статистика</h4>
+            <div class="flex-left">
+                <h4 class="table-title">Статистика</h4>
                 {stats_html}
             </div>
-            <div class="flex-right" style="min-width: 450px; flex: 2;">
+            <div class="flex-right">
                 {plot_html}
             </div>
         </div>
@@ -750,7 +757,7 @@ class CleanerAccessor:
         })
 
         if series.empty:
-            plot_html = "<div style='text-align:center;'><h3>Нет данных для построения графика</h3></div>"
+            plot_html = "<div class='image-container' style='align-items:center;'><h3>Нет данных для построения графика</h3></div>"
         else:
             with plt.style.context('default'):
                 fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(
@@ -794,7 +801,7 @@ class CleanerAccessor:
         })
 
         if series.empty:
-            plot_html = "<div style='text-align:center;'><h3>Нет данных</h3></div>"
+            plot_html = "<div class='image-container' style='align-items:center;'><h3>Нет данных</h3></div>"
         else:
             with plt.style.context('default'):
                 fig, ax = plt.subplots(figsize=(7.5, 4.5))
@@ -828,7 +835,7 @@ class CleanerAccessor:
         stats_df = pd.DataFrame(stats_list, columns=['Метрика', 'Значение'])
 
         if series.empty:
-            plot_html = "<div style='text-align:center;'><h3>Нет данных</h3></div>"
+            plot_html = "<div class='image-container' style='align-items:center;'><h3>Нет данных</h3></div>"
         else:
             with plt.style.context('default'):
                 fig, ax = plt.subplots(figsize=(7.5, 4.5))
@@ -854,7 +861,7 @@ class CleanerAccessor:
         if clean_dates.empty:
             stats_df = pd.DataFrame(
                 {'Метрика': ['Ошибка'], 'Значение': ['Нет корректных дат']})
-            plot_html = "<div style='text-align:center;'><h3>Нет дат</h3></div>"
+            plot_html = "<div class='image-container' style='align-items:center;'><h3>Нет дат</h3></div>"
         else:
             duration = clean_dates.max() - clean_dates.min()
             stats_df = pd.DataFrame({
@@ -899,12 +906,9 @@ class CleanerAccessor:
             elif col_type == 'date':
                 pages.append(self.generate_date_page(self._obj, col))
 
-        # Уникальный ID дашборда (предотвращает конфликты JS при нескольких дашбордах в одной тетрадке)
         dash_id = str(uuid.uuid4())[:8]
-
         page_titles = [p['title'] for p in pages]
 
-        # Сборка HTML всех страниц (только первая страница имеет display: block)
         pages_html = []
         for i, page in enumerate(pages):
             display_style = "block" if i == 0 else "none"
@@ -914,24 +918,39 @@ class CleanerAccessor:
         pages_html_str = "\n".join(pages_html)
         titles_json = json.dumps(page_titles)
 
-        # Главный HTML-шаблон с инлайновым CSS и JS
         final_html = f"""
         <div id="eda-dashboard-{dash_id}" class="dashboard-wrapper">
             <style>
-                #eda-dashboard-{dash_id} {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 1200px; margin: 0 auto; color: #333; }}
-                #eda-dashboard-{dash_id} h3 {{ margin: 0; color: #2c3e50; font-size: 20px; }}
-                #eda-dashboard-{dash_id} h4 {{ border-bottom: 2px solid #2fa1a7; padding-bottom: 5px; color: #2fa1a7; margin-top: 0; font-size: 16px; }}
-                #eda-dashboard-{dash_id} .top-panel {{ display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }}
-                #eda-dashboard-{dash_id} .nav-btn {{ background-color: #2fa1a7; color: white; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; font-size: 14px; font-weight: bold; transition: background 0.2s; min-width: 100px; }}
-                #eda-dashboard-{dash_id} .nav-btn:hover:not(:disabled) {{ background-color: #248287; }}
-                #eda-dashboard-{dash_id} .nav-btn:disabled {{ background-color: #d1d5db; cursor: not-allowed; color: #9ca3af; }}
-                #eda-dashboard-{dash_id} .flex-container {{ display: flex; gap: 20px; flex-wrap: wrap; }}
-                #eda-dashboard-{dash_id} .table-container {{ overflow-x: auto; width: 100%; }}
-                #eda-dashboard-{dash_id} table.eda-table {{ border-collapse: collapse; width: 100%; font-size: 13px; margin-bottom: 15px; }}
-                #eda-dashboard-{dash_id} table.eda-table th, #eda-dashboard-{dash_id} table.eda-table td {{ border: 1px solid #e5e7eb; padding: 8px 10px; }}
-                #eda-dashboard-{dash_id} table.eda-table th {{ background-color: #f9fafb; font-weight: 600; color: #374151; }}
-                #eda-dashboard-{dash_id} table.eda-table tr:nth-child(even) {{ background-color: #f9fafb; }}
-                #eda-dashboard-{dash_id} table.eda-table tr:hover {{ background-color: #f3f4f6; }}
+                #eda-dashboard-{dash_id} {{ font-family: sans-serif; background: #ffffff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 1200px; margin: 0 auto; color: #333; box-sizing: border-box; }}
+                #eda-dashboard-{dash_id} h3 {{ margin: 0; color: black !important; font-size: 20px; font-weight: bold; }}
+                #eda-dashboard-{dash_id} .table-title {{ border-bottom: 2px solid #2fa1a7; padding-bottom: 5px; color: #2fa1a7; margin-top: 0; margin-bottom: 10px; font-size: 16px; position: sticky; top: 0; background: #ffffff; z-index: 2; }}
+                #eda-dashboard-{dash_id} .top-panel {{ display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid gray; padding-bottom: 15px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }}
+                
+                /* Buttons fixed size & styling */
+                #eda-dashboard-{dash_id} .nav-btn {{ background-color: #2fa1a7 !important; color: white !important; border: none !important; border-radius: 6px !important; padding: 8px 0; cursor: pointer; font-size: 14px; font-weight: bold; transition: background-color 0.2s ease, transform 0.1s ease !important; height: 36px; width: 110px; text-align: center; }}
+                #eda-dashboard-{dash_id} .nav-btn:hover:not(:disabled) {{ background-color: #39c6ce !important; }}
+                #eda-dashboard-{dash_id} .nav-btn:active:not(:disabled) {{ transform: scale(0.95) !important; }}
+                #eda-dashboard-{dash_id} .nav-btn:disabled {{ background-color: #e0e0e0 !important; cursor: not-allowed !important; color: #9e9e9e !important; box-shadow: none !important; }}
+                
+                /* Layout 480px fixed height */
+                #eda-dashboard-{dash_id} .eda-page {{ height: 480px; box-sizing: border-box; overflow: hidden; }}
+                #eda-dashboard-{dash_id} .flex-container {{ display: flex; gap: 20px; height: 100%; box-sizing: border-box; align-items: flex-start; }}
+                #eda-dashboard-{dash_id} .flex-left {{ width: 33%; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; padding-right: 5px; }}
+                #eda-dashboard-{dash_id} .flex-right {{ width: 67%; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }}
+                #eda-dashboard-{dash_id} .single-container {{ height: 100%; display: flex; flex-direction: column; overflow: hidden; padding-right: 5px; box-sizing: border-box; }}
+                
+                /* Tables (white-space: nowrap + strict scrolling logic) */
+                #eda-dashboard-{dash_id} .table-container {{ flex: 1; min-height: 0; overflow: auto; width: 100%; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 5px; box-sizing: border-box; }}
+                #eda-dashboard-{dash_id} table.eda-table {{ border-collapse: separate; border-spacing: 0; width: 100%; font-size: 12px; white-space: nowrap; margin: 0; line-height: 1.2; }}
+                #eda-dashboard-{dash_id} table.eda-table th, #eda-dashboard-{dash_id} table.eda-table td {{ border-bottom: 1px solid #eee; padding: 4px 8px; color: black; }}
+                #eda-dashboard-{dash_id} table.eda-table tr:last-child td {{ border-bottom: none; }}
+                #eda-dashboard-{dash_id} table.eda-table th {{ background-color: #f2f2f2 !important; font-weight: bold; position: sticky; top: 0; z-index: 1; border-bottom: 1px solid #ddd; }}
+                #eda-dashboard-{dash_id} table.eda-table td {{ background-color: #ffffff !important; }}
+                #eda-dashboard-{dash_id} table.eda-table tr:hover td {{ background-color: #f9fafb !important; }}
+                
+                /* Images */
+                #eda-dashboard-{dash_id} .image-container {{ flex: 1; min-height: 0; overflow: auto; width: 100%; text-align: center; display: flex; justify-content: center; align-items: flex-start; }}
+                #eda-dashboard-{dash_id} .image-container img {{ max-width: 100%; height: auto; display: block; margin: 0 auto; }}
             </style>
 
             <div class="top-panel">
@@ -939,7 +958,7 @@ class CleanerAccessor:
                     <h3>{title} <span style="font-weight:300; color:#9ca3af; margin:0 8px;">|</span> <span id="eda-title-{dash_id}" style="color:#2fa1a7; font-weight:600;">{page_titles[0]}</span></h3>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <span style="font-size: 14px; font-weight: 600; color: #4b5563; min-width: 60px; text-align: center;">
+                    <span style="font-size: 14px; font-weight: bold; color: #212121; min-width: 60px; text-align: center;">
                         <span id="eda-counter-{dash_id}">1</span> из {len(pages)}
                     </span>
                     <button id="eda-prev-{dash_id}" class="nav-btn" disabled>◀ Назад</button>
@@ -982,5 +1001,4 @@ class CleanerAccessor:
         """
 
         clear_output()
-        # Выводим чисто HTML (исполняется как нативный код ячейки Jupyter)
         display(HTML(final_html))
