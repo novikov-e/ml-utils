@@ -14,8 +14,7 @@ dependencies = [
     "numpy==2.5.3",
     "pandas==3.0.6",
     "seaborn==0.13.2",
-    "Jinja2==3.1.6",
-    "jupyter-dark-detect==0.1.0"
+    "Jinja2==3.1.6"
     # Добавьте сюда другие библиотеки, нужные для EDA/отчетов (например, matplotlib, seaborn, ydata-profiling)
 ]
 

@@ -88,7 +88,7 @@
 	max-height: 480px;
 	overflow: auto;
 	font-family: sans-serif;
-	/* border: 1px solid #ddd; */
+	border: 1px solid #ddd;
 	border-radius: 6px;
 	box-sizing: border-box;
 }
@@ -104,7 +104,7 @@
 .table-container th {
 	/* background-color: #f2f2f2 !important; */
 	padding: 4px 8px;
-	/* border-bottom: 1px solid #ddd; */
+	border-bottom: 1px solid #ddd;
 	font-size: 12px;
 	line-height: 1.2;
 	position: sticky;
@@ -115,7 +115,7 @@
 .table-container td {
 	/* background-color: #ffffff !important; */
 	padding: 4px 8px;
-	/* border-bottom: 1px solid #eee; */
+	border-bottom: 1px solid #eee;
 	font-size: 12px;
 	line-height: 1.2;
 }
