@@ -1,0 +1,28 @@
+<div id="eda-dashboard-{{DASH_ID}}" class="dashboard-wrapper">
+	<style>
+		{{STYLES}}
+	</style>
+
+	<div class="top-panel">
+		<div>
+			<h3>{{TITLE}} <span style="font-weight:300; color:#9ca3af; margin:0 8px;">|</span> <span
+					id="eda-title-{{DASH_ID}}" style="color:#2fa1a7; font-weight:600;">{{PAGE_TITLE}}</span></h3>
+		</div>
+		<div style="display: flex; align-items: center; gap: 15px;">
+			<span style="font-size: 14px; font-weight: bold; color: #212121; min-width: 60px; text-align: center;">
+				Страница <span id="eda-counter-{{DASH_ID}}">1</span> из {{TOTAL_PAGES}}
+			</span>
+			<button id="eda-prev-{{DASH_ID}}" class="nav-btn">◀</button>
+			<button id="eda-next-{{DASH_ID}}" class="nav-btn">▶</button>
+		</div>
+	</div>
+
+	<div class="content-container" id="eda-content-{{DASH_ID}}"
+		style="position: relative; height: 480px; width: 100%; overflow: hidden;">
+		{{CONTENT}}
+	</div>
+
+	<script>
+        {{SCRIPT}}
+	</script>
+</div>

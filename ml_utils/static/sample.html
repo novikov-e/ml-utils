@@ -1,5 +1,3 @@
-{% from 'static/macros.html' import render_table %}
-<div class="samples">
-	<h3 class="table-title">Случайные строки</h3>
-	{{ render_table(columns, rows, aligns) }}
+<div class="single-container">
+	{{ table_html | safe }}
 </div>
